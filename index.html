@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tablero de Puntaje - Laberinto</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tablero de Puntaje - Laberinto</h1>
+    <svg id="maze" viewBox="0 0 700 400">
+      <!-- Camino del laberinto -->
+      <path id="mazePath" d="M 50,350 L 300,350 L 300,200 L 150,200 L 150,50 L 600,50" 
+            stroke="#333" stroke-width="10" fill="none" stroke-linecap="round" />
+      
+      <!-- Marcadores con íconos representativos -->
+      <text id="Jaguares" font-size="24" text-anchor="middle" alignment-baseline="middle">🐆</text>
+      <text id="Leones" font-size="24" text-anchor="middle" alignment-baseline="middle">🦁</text>
+      <text id="Lobos" font-size="24" text-anchor="middle" alignment-baseline="middle">🐺</text>
+      <text id="Panteras" font-size="24" text-anchor="middle" alignment-baseline="middle">🐈</text>
+      <text id="Suricatas" font-size="24" text-anchor="middle" alignment-baseline="middle">🐾</text>
+    </svg>
+  </div>
+
+  <script>
+    // Obtener el camino del laberinto y su longitud total
+    const mazePath = document.getElementById('mazePath');
+    const totalLength = mazePath.getTotalLength();
+
+    // Equipos disponibles
+    const teams = ['Jaguares', 'Leones', 'Lobos', 'Panteras', 'Suricatas'];
+
+    // Función que actualiza la posición del marcador según el puntaje (0 a 100)
+    function updateTeamPosition(team, score) {
+      const marker = document.getElementById(team);
+      let progress = Math.min(Math.max(score, 0), 100) / 100;
+      let point = mazePath.getPointAtLength(progress * totalLength);
+      marker.setAttribute('x', point.x);
+      marker.setAttribute('y', point.y);
+    }
+
+    // Cargar configuración desde el archivo externo "config.json"
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('config.json')
+        .then(response => response.json())
+        .then(data => {
+          teams.forEach(team => {
+            if (data[team] !== undefined) {
+              updateTeamPosition(team, data[team]);
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error al cargar config.json:', error);
+        });
+    });
+  </script>
+</body>
+</html>
+
+
